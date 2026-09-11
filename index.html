@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'">
+  <title>Colare · Hiring workload calculator</title>
+  <meta name="description" content="Model hiring workload, engineering capacity and costs with editable assumptions. Calculate in your browser without uploading inputs.">
+  <link rel="icon" href="assets/colare-logo.png" type="image/png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main id="colare-calculator">
+  <header class="brand-row"><img src="assets/colare-logo.png" alt="Colare" width="125"><span>Interactive planning calculator</span></header>
+  <section class="intro">
+    <div><p class="eyebrow">A hiring business case, with the inputs visible</p><h1>What work could change?</h1><p>Compare the same hiring volume before and after a proposed assessment change. Count the work your team keeps, as well as the work it adds.</p></div>
+    <div class="tools"><button id="preset" type="button">Load illustrative example</button><button id="reset" type="button">Reset to blank</button><button id="export" type="button">Export inputs</button></div>
+  </section>
+  <p id="basis-note" class="notice">Illustrative model. This is not a measured customer result, a Colare capacity promise or a quote.</p>
+  <div class="workspace">
+    <form id="inputs" autocomplete="off">
+      <section class="input-section">
+        <div class="section-heading"><span class="step">01</span><div><h2>Set the comparison</h2><p>All counts and costs apply to this period. Changing the label does not annualize the inputs.</p></div></div>
+        <div class="fields cohort">
+          <label>Scenario name<input id="scenario" data-field="scenario" type="text" maxlength="120"></label>
+          <label>Candidates in the cohort<input id="candidates" data-field="candidates" type="number" min="0" step="1" placeholder="Enter count"></label>
+          <label>Period length<input id="period" data-field="period" type="number" min="0.01" step="any" placeholder="Enter length"></label>
+          <label>Period unit<select id="periodUnit" data-field="periodUnit"><option value="weeks">weeks</option><option value="months">months</option><option value="days">days</option></select></label>
+        </div>
+        <label class="mode-label">Proposed use<select id="mode" data-field="mode"><option value="replace">Replace selected stages</option><option value="additive">Add an evaluation; keep every current stage</option></select></label>
+        <p class="help">Replacement is a proposal until the hiring team agrees. An additive evaluation retains all baseline work.</p>
+      </section>
+      <section class="input-section">
+        <div class="section-heading"><span class="step">02</span><div><h2>Map the current work</h2><p>Participation is the share of this same cohort reaching each stage. Enter all interviewers; minutes are elapsed stage duration.</p></div></div>
+        <div id="stages"></div>
+        <button id="add-stage" class="text-button" type="button">Add a stage</button>
+        <p class="help">The modeled example assumes both stages for all 32 candidates and one interviewer per stage. Those assumptions need confirmation for a real account.</p>
+      </section>
+      <section class="input-section">
+        <div class="section-heading"><span class="step">03</span><div><h2>Count the added work</h2><p>Blank means unknown. Enter 0 only when a category truly adds no work. Existing retained work belongs above, not here again.</p></div></div>
+        <label class="single-field">Cohort receiving the assessment (%)<input id="assessmentParticipation" data-field="assessmentParticipation" type="number" min="0" max="100" step="any" placeholder="Unknown"></label>
+        <h3>Report review</h3>
+        <div class="fields"><label>Minutes per assessed candidate<input id="reviewMinutes" data-field="reviewMinutes" type="number" min="0" step="any" placeholder="Unknown"></label><label>Reviewers per candidate<input id="reviewPeople" data-field="reviewPeople" type="number" min="0" step="1" placeholder="Unknown"></label><label>Loaded rate per person-hour ($)<input id="reviewRate" data-field="reviewRate" type="number" min="0" step="any" placeholder="Optional for hours"></label></div>
+        <h3>Exceptions and support</h3>
+        <div class="fields"><label>Assessed candidates needing help (%)<input id="exceptionPercent" data-field="exceptionPercent" type="number" min="0" max="100" step="any" placeholder="Unknown"></label><label>Minutes per exception<input id="exceptionMinutes" data-field="exceptionMinutes" type="number" min="0" step="any" placeholder="Unknown"></label><label>People per exception<input id="exceptionPeople" data-field="exceptionPeople" type="number" min="0" step="1" placeholder="Unknown"></label><label>Loaded rate per person-hour ($)<input id="exceptionRate" data-field="exceptionRate" type="number" min="0" step="any" placeholder="Optional for hours"></label></div>
+        <h3>Work allocated to this period</h3>
+        <p class="help">Use total person-hours across participants. If setup spans cohorts, allocate it once across a stated period; do not amortize it silently.</p>
+        <div class="hours-grid">
+          <label>Setup person-hours<input id="setupHours" data-field="setupHours" type="number" min="0" step="any" placeholder="Unknown"></label><label>Setup loaded rate ($/h)<input id="setupRate" data-field="setupRate" type="number" min="0" step="any" placeholder="Optional for hours"></label>
+          <label>Calibration person-hours<input id="calibrationHours" data-field="calibrationHours" type="number" min="0" step="any" placeholder="Unknown"></label><label>Calibration loaded rate ($/h)<input id="calibrationRate" data-field="calibrationRate" type="number" min="0" step="any" placeholder="Optional for hours"></label>
+          <label>Other added / changed follow-up hours<input id="otherHours" data-field="otherHours" type="number" min="0" step="any" placeholder="Unknown"></label><label>Other work loaded rate ($/h)<input id="otherRate" data-field="otherRate" type="number" min="0" step="any" placeholder="Optional for hours"></label>
+        </div>
+      </section>
+      <section class="input-section">
+        <div class="section-heading"><span class="step">04</span><div><h2>Add the commercial inputs</h2><p>Optional for the time comparison. Required before showing value after costs or modeled economic ROI.</p></div></div>
+        <div class="fields"><label>Colare cost for this period ($)<input id="colareCost" data-field="colareCost" type="number" min="0" step="any" placeholder="Awaiting quote"></label><label>Other incremental cash costs ($)<input id="otherCost" data-field="otherCost" type="number" min="0" step="any" placeholder="Unknown; enter 0 if none"></label></div>
+        <p class="help">Do not include the same labor here and in added work. No Colare price is supplied by this prototype. Rates are your blended cost per person-hour, not candidate compensation.</p>
+      </section>
+    </form>
+    <aside class="results">
+      <div class="result-inner">
+        <p class="eyebrow" id="period-label">Modeled comparison</p>
+        <h2>Your team’s time</h2>
+        <div id="validation" role="alert" hidden></div>
+        <div id="result-summary" aria-live="polite" aria-atomic="true">
+          <div class="hero-result"><span>Potential capacity released</span><strong id="capacity">—</strong><p id="capacity-note">Complete the added-work inputs to calculate.</p></div>
+          <div class="comparison"><div><span>Current process</span><strong id="baseline">—</strong></div><div><span>Proposed process</span><strong id="proposed">—</strong></div></div>
+        </div>
+        <div id="chart" class="time-chart" role="img" aria-label="Current and proposed modeled workload"></div>
+        <div class="legend"><span><i class="kept"></i>Retained</span><span><i class="removed"></i>Selected for replacement</span><span><i class="added"></i>Added work</span></div>
+        <dl class="breakdown"><div><dt>Selected for replacement, before deductions</dt><dd id="removed">—</dd></div><div><dt>Added customer work</dt><dd id="added">—</dd></div></dl>
+        <details id="missing-detail"><summary id="missing-summary">Time inputs still needed</summary><p id="missing" class="help"></p></details>
+        <details id="economics-detail"><summary>Economic view · USD</summary>
+          <dl class="breakdown money"><div><dt>Labor-capacity value</dt><dd id="capacity-value">—</dd></div><div><dt>Value after incremental costs</dt><dd id="economic-value">—</dd></div><div><dt>Modeled economic ROI</dt><dd id="roi">—</dd></div></dl>
+          <p id="cost-missing" class="help"></p>
+          <p class="money-note"><b>Capacity is not cash savings.</b> This values staff time that could be used elsewhere. A budget reduction needs separate evidence of an expense that will stop.</p>
+        </details>
+        <details><summary>How the model works</summary><div class="formula">
+          <p>Stage hours = cohort × participation × minutes × interviewers ÷ 60.</p><p>Proposed hours = retained stage hours + review + exceptions + setup + calibration + other added work.</p><p>Capacity released = selected stage hours − added work.</p><p>Labor-capacity value = selected hours × their rates − added hours × their rates.</p><p>Value after costs = labor-capacity value − Colare cost − other incremental cash costs.</p><p>Economic ROI = (selected labor value − total incremental investment) ÷ total incremental investment. Investment includes added labor value, Colare cost and other incremental costs. It must be known and greater than zero.</p>
+          <p>No context-switching multiplier, default salary, measured result, time-to-hire prediction or candidate-quality improvement is assumed. Counts/rates must describe comparable roles, quality requirements and periods.</p>
+        </div></details>
+        <p class="local-note">Your inputs stay in this browser tab and reset on refresh. Export them before closing if you want to keep them.</p>
+      </div>
+    </aside>
+  </div>
+  <footer>Colare · Modeled hiring workload · September 2026 <span id="export-status" role="status"></span></footer>
+</main>
+<script src="model.js"></script><script src="app.js"></script>
+</body></html>
