@@ -2,85 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'">
-  <title>Colare · Hiring workload calculator</title>
-  <meta name="description" content="Model hiring workload, engineering capacity and costs with editable assumptions. Calculate in your browser without uploading inputs.">
-  <link rel="icon" href="assets/colare-logo.png" type="image/png">
-  <link rel="stylesheet" href="styles.css">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'">
+  <title>Colare · Screening cost calculator</title>
+  <meta name="description" content="Compare the cost of one technical screening step today and with Colare. Your inputs stay in your browser.">
+  <link rel="stylesheet" href="styles.css?v=20260915"><link rel="icon" href="assets/colare-logo.png">
 </head>
 <body>
-<main id="colare-calculator">
-  <header class="brand-row"><img src="assets/colare-logo.png" alt="Colare" width="125"><span>Hiring calculator</span></header>
-  <section class="intro">
-    <div><h1>How much time could your team save?</h1><p>Compare your current hiring process with a proposed assessment. Include the interviews you keep and the review work you add.</p></div>
-    <div class="tools"><button id="preset" type="button">Load example</button><button id="reset" type="button">Clear inputs</button><button id="export" type="button">Export inputs</button></div>
-  </section>
+<main>
+  <header><img src="assets/colare-logo.png" alt="Colare" width="118"><span>Screening cost calculator</span></header>
+  <section class="intro"><h1>What does technical screening cost?</h1><p>Compare one screening step, for the same role and candidates, over one month.</p></section>
   <div class="workspace">
     <form id="inputs" autocomplete="off">
-      <section class="input-section">
-        <div class="section-heading"><span class="step">01</span><div><h2>Set the comparison</h2><p>Choose a hiring cohort and period. Use that period for all counts and costs.</p></div></div>
-        <div class="fields cohort">
-          <label>Scenario name<input id="scenario" data-field="scenario" type="text" maxlength="120"></label>
-          <label>Candidates in the cohort<input id="candidates" data-field="candidates" type="number" min="0" step="1" placeholder="Enter count"></label>
-          <label>Period length<input id="period" data-field="period" type="number" min="0.01" step="any" placeholder="Enter length"></label>
-          <label>Period unit<select id="periodUnit" data-field="periodUnit"><option value="weeks">weeks</option><option value="months">months</option><option value="days">days</option></select></label>
-        </div>
-        <label class="mode-label">How you’ll use the assessment<select id="mode" data-field="mode"><option value="replace">Replace selected stages</option><option value="additive">Add an assessment; keep current stages</option></select></label>
-      </section>
-      <section class="input-section">
-        <div class="section-heading"><span class="step">02</span><div><h2>Current hiring process</h2><p>Enter the share of candidates reaching each stage, its duration and the number of interviewers.</p></div></div>
-        <div id="stages"></div>
-        <button id="add-stage" class="text-button" type="button">Add a stage</button>
-        <p id="example-note" class="help">Example only: 32 candidates attend a 45-minute screen and a 50-minute presentation, each with one interviewer.</p>
-      </section>
-      <section class="input-section">
-        <div class="section-heading"><span class="step">03</span><div><h2>Review and setup time</h2><p>Leave unknown values blank. Enter 0 if no work is needed. Count each task once.</p></div></div>
-        <label class="single-field">Cohort receiving the assessment (%)<input id="assessmentParticipation" data-field="assessmentParticipation" type="number" min="0" max="100" step="any" placeholder="Unknown"></label>
-        <h3>Report review</h3>
-        <div class="fields"><label>Minutes per assessed candidate<input id="reviewMinutes" data-field="reviewMinutes" type="number" min="0" step="any" placeholder="Unknown"></label><label>Reviewers per candidate<input id="reviewPeople" data-field="reviewPeople" type="number" min="0" step="1" placeholder="Unknown"></label><label>Hourly cost per person ($)<input id="reviewRate" data-field="reviewRate" type="number" min="0" step="any" placeholder="Optional for hours"></label></div>
-        <h3>Exceptions and support</h3>
-        <div class="fields"><label>Assessed candidates needing help (%)<input id="exceptionPercent" data-field="exceptionPercent" type="number" min="0" max="100" step="any" placeholder="Unknown"></label><label>Minutes per exception<input id="exceptionMinutes" data-field="exceptionMinutes" type="number" min="0" step="any" placeholder="Unknown"></label><label>People per exception<input id="exceptionPeople" data-field="exceptionPeople" type="number" min="0" step="1" placeholder="Unknown"></label><label>Hourly cost per person ($)<input id="exceptionRate" data-field="exceptionRate" type="number" min="0" step="any" placeholder="Optional for hours"></label></div>
-        <h3>Setup and calibration</h3>
-        <p class="help">Enter total hours across everyone involved. If setup covers several cohorts, include only this cohort’s share.</p>
-        <div class="hours-grid">
-          <label>Setup person-hours<input id="setupHours" data-field="setupHours" type="number" min="0" step="any" placeholder="Unknown"></label><label>Setup hourly cost ($)<input id="setupRate" data-field="setupRate" type="number" min="0" step="any" placeholder="Optional for hours"></label>
-          <label>Calibration person-hours<input id="calibrationHours" data-field="calibrationHours" type="number" min="0" step="any" placeholder="Unknown"></label><label>Calibration hourly cost ($)<input id="calibrationRate" data-field="calibrationRate" type="number" min="0" step="any" placeholder="Optional for hours"></label>
-          <label>Other added work · hours<input id="otherHours" data-field="otherHours" type="number" min="0" step="any" placeholder="Unknown"></label><label>Other work hourly cost ($)<input id="otherRate" data-field="otherRate" type="number" min="0" step="any" placeholder="Optional for hours"></label>
-        </div>
-      </section>
-      <section class="input-section">
-        <div class="section-heading"><span class="step">04</span><div><h2>Costs</h2><p>Add hourly rates and fees to see the cost comparison.</p></div></div>
-        <div class="fields"><label>Colare cost for this period ($)<input id="colareCost" data-field="colareCost" type="number" min="0" step="any" placeholder="Awaiting quote"></label><label>Other added cash costs ($)<input id="otherCost" data-field="otherCost" type="number" min="0" step="any" placeholder="Unknown; enter 0 if none"></label></div>
-        <p class="help">Hourly rates should include salary, benefits and overhead. Keep labor costs in the time sections above.</p>
-      </section>
-    </form>
-    <aside class="results">
-      <div class="result-inner">
-        <p class="eyebrow" id="period-label">Estimate</p>
-        <h2>Your team’s time</h2>
-        <div id="validation" role="alert" hidden></div>
-        <div id="result-summary" aria-live="polite" aria-atomic="true">
-          <div class="hero-result"><span>Estimated time saved</span><strong id="capacity">—</strong><p id="capacity-note">Complete the missing inputs to see the estimate.</p></div>
-          <div class="comparison"><div><span>Current process</span><strong id="baseline">—</strong></div><div><span>Proposed process</span><strong id="proposed">—</strong></div></div>
-        </div>
-        <div id="chart" class="time-chart" role="img" aria-label="Current and proposed workload"></div>
-        <div class="legend"><span><i class="kept"></i>Retained</span><span><i class="removed"></i>Selected for replacement</span><span><i class="added"></i>Added work</span></div>
-        <dl class="breakdown"><div><dt>Time being replaced</dt><dd id="removed">—</dd></div><div><dt>Review and setup time</dt><dd id="added">—</dd></div></dl>
-        <details id="missing-detail"><summary id="missing-summary">Time inputs still needed</summary><p id="missing" class="help"></p></details>
-        <details id="economics-detail"><summary>Cost comparison · USD</summary>
-          <dl class="breakdown money"><div><dt>Value of time saved</dt><dd id="capacity-value">—</dd></div><div><dt>Value after costs</dt><dd id="economic-value">—</dd></div><div><dt>Estimated ROI</dt><dd id="roi">—</dd></div></dl>
-          <p id="cost-missing" class="help"></p>
-          <p class="money-note">Dollar values reflect staff time. Cash savings depend on actual spending reductions.</p>
-        </details>
-        <details><summary>How it’s calculated</summary><div class="formula">
-          <p>Stage hours = cohort × participation × minutes × interviewers ÷ 60.</p><p>Proposed hours = retained stage hours + review + exceptions + setup + calibration + other added work.</p><p>Time saved = hours replaced − added work.</p><p>Value of time saved = selected hours × their rates − added hours × their rates.</p><p>Value after costs = value of time saved − Colare fees − other cash costs.</p><p>ROI (%) = value after costs ÷ added costs × 100. Added costs include extra staff time, Colare fees and other cash costs. ROI requires known costs greater than zero.</p>
-          <p>Compare the same roles, hiring standards and time period.</p>
-        </div></details>
-        <p class="local-note">Inputs reset when you refresh. Export them to keep a copy.</p>
+      <div class="section-title"><h2>Your numbers</h2><button id="clear" type="button">Clear inputs</button></div>
+      <p class="example" id="example">Illustrative inputs. Replace them with your team’s estimates.</p>
+      <label for="candidates">Candidates screened per month</label>
+      <div class="input-unit"><input id="candidates" type="number" min="0" step="1" inputmode="numeric"><span>candidates</span></div>
+      <div class="pair time-inputs">
+        <div><label for="beforeMinutes">Engineering time today</label><div class="input-unit"><input id="beforeMinutes" type="number" min="0" step="any" inputmode="decimal"><span>min / candidate</span></div></div>
+        <div><label for="afterMinutes">Engineering time with Colare</label><div class="input-unit"><input id="afterMinutes" type="number" min="0" step="any" inputmode="decimal"><span>min / candidate</span></div></div>
       </div>
+      <p class="help">Add up everyone’s time. With Colare, include remaining screening, report review and follow-up.</p>
+      <div class="pair">
+        <div><label for="engineeringRate">Engineering hourly cost</label><div class="input-unit"><span>$</span><input id="engineeringRate" type="number" min="0" step="any" inputmode="decimal"><span>/ hour</span></div></div>
+        <div><label for="colareFee">Colare quote for this month</label><div class="input-unit"><span>$</span><input id="colareFee" type="number" min="0" step="any" inputmode="decimal" placeholder="Add your quote"></div></div>
+      </div>
+      <p class="help">Use an hourly cost that includes salary, benefits and overhead. No Colare price is assumed.</p>
+      <details class="extra"><summary>Add recruiter time, setup or other costs</summary>
+        <div class="option"><label class="check"><input id="includeRecruiter" type="checkbox"> Include recruiter time</label><div id="recruiter-fields" class="optional-fields" hidden>
+          <div class="pair"><div><label for="recruiterBefore">Today · min / candidate</label><input id="recruiterBefore" type="number" min="0" step="any" inputmode="decimal"></div><div><label for="recruiterAfter">With Colare · min / candidate</label><input id="recruiterAfter" type="number" min="0" step="any" inputmode="decimal"></div></div>
+          <label for="recruiterRate">Recruiter hourly cost ($)</label><input id="recruiterRate" type="number" min="0" step="any" inputmode="decimal"><p class="help">Include coordination and candidate support. Keep it separate from engineering time.</p>
+        </div></div>
+        <div class="option"><label class="check"><input id="includeSetup" type="checkbox"> Include setup and calibration</label><div id="setup-fields" class="optional-fields" hidden>
+          <label for="setupCost">Your team’s setup cost this month ($)</label><input id="setupCost" type="number" min="0" step="any" inputmode="decimal"><p class="help">Total setup hours × the relevant hourly costs. Include only this month’s share; exclude work already counted above.</p>
+        </div></div>
+        <div class="option"><label class="check"><input id="includeOther" type="checkbox"> Include other expenses</label><div id="other-fields" class="optional-fields" hidden>
+          <div class="pair"><div><label for="otherBefore">Today · this month ($)</label><input id="otherBefore" type="number" min="0" step="any" inputmode="decimal"></div><div><label for="otherAfter">With Colare · this month ($)</label><input id="otherAfter" type="number" min="0" step="any" inputmode="decimal"></div></div><p class="help">For example, an outside screening service. Exclude Colare fees and staff time already counted.</p>
+        </div></div>
+      </details>
+      <p class="detailed-link">Comparing several stages or different hiring volumes? <a href="detailed/index.html">Use the detailed model ↗</a></p>
+    </form>
+    <aside class="results" aria-label="Monthly cost comparison">
+      <p class="eyebrow">Estimated monthly costs · USD</p>
+      <div id="validation" role="alert" hidden></div>
+      <div id="summary" aria-live="polite" aria-atomic="true">
+        <div class="total"><h2>Today</h2><strong id="today">—</strong></div>
+        <div class="cost-row"><span>Engineering time <small id="hours-before"></small></span><span id="engineering-before">—</span></div>
+        <div class="cost-row recruiter-row" hidden><span>Recruiter time</span><span id="recruiter-before">—</span></div>
+        <div class="cost-row other-row" hidden><span>Other expenses</span><span id="other-before">—</span></div>
+        <div class="total proposed"><h2>With Colare</h2><strong id="with-colare">—</strong></div>
+        <div class="cost-row"><span>Engineering time <small id="hours-after"></small></span><span id="engineering-after">—</span></div>
+        <div class="cost-row recruiter-row" hidden><span>Recruiter time</span><span id="recruiter-after">—</span></div>
+        <div class="cost-row setup-row" hidden><span>Setup and calibration</span><span id="setup">—</span></div>
+        <div class="cost-row other-row" hidden><span>Other expenses</span><span id="other-after">—</span></div>
+        <div class="cost-row fee"><span>Colare fee</span><span id="fee">Add your quote</span></div>
+        <div class="difference"><span id="difference-label">Estimated cost difference</span><strong id="difference">—</strong><p id="difference-note">Add your Colare quote to complete the comparison.</p></div>
+      </div>
+      <p class="scope" id="scope"></p>
+      <p class="qualification">Staff costs value your team’s time. A lower estimate does not necessarily mean lower payroll or cash spending.</p>
+      <details class="calculation"><summary>See the calculation</summary><p>Monthly staff cost = candidates × total minutes per candidate ÷ 60 × hourly cost.</p><p>With Colare = remaining staff cost + Colare fee + any setup or other costs included.</p><p>Difference = today’s total − the total with Colare. Both sides cover the same candidates and screening step. Unchanged interviews are outside this comparison.</p></details>
     </aside>
   </div>
-  <footer>Colare · Hiring calculator <span id="export-status" role="status"></span></footer>
+  <footer><span>Your numbers stay in this browser and reset when you refresh.</span><span>Colare · Hiring costs</span></footer>
 </main>
-<script src="model.js"></script><script src="app.js"></script>
+<script src="model.js?v=20260915"></script><script src="app.js?v=20260915"></script>
 </body></html>

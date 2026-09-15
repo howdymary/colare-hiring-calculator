@@ -1,23 +1,21 @@
-# Colare hiring workload calculator
+# Colare screening cost calculator
 
-An interactive browser-based model for comparing a current hiring process with a proposed assessment change.
+Compare one technical screening step, for the same role and candidates, over one month.
 
 ## Use the calculator
 
-1. Define a cohort and measurement period.
-2. Enter the current stages, participation, minutes and interviewers.
-3. Choose replacement or an additive evaluation.
-4. Include remaining review, exceptions, setup and calibration effort.
-5. Add rates and commercial costs for the economic comparison.
+Enter five inputs: candidates per month, total engineering minutes per candidate today, total engineering minutes with Colare, loaded engineering hourly cost and the Colare quote for the month.
 
-Results update as inputs change. The built-in example is illustrative and is not a customer result, a capacity promise or a quote. Blank values remain unknown. The model distinguishes labor capacity from cash savings and withholds ROI until the required cost inputs are present.
+The page shows today's estimated cost, the estimated cost with Colare and the difference. Recruiter time, setup/calibration and other expenses can be included in the optional breakdown. Excluded items are stated beside the result. Included costs left blank remain unknown; enter zero only when there is no cost. No Colare price is assumed.
 
-Inputs stay in memory. Export inputs and calculations to JSON before refreshing or closing. No input data is uploaded, and no analytics or backend is connected.
+The example inputs are illustrative, not a customer result or a promise of reduced workload. Staff costs value time; a lower estimate does not necessarily mean lower payroll or cash spending. Unchanged interviews are outside the comparison. The detailed model remains available at `detailed/` for multiple stages, participation rates and different hiring volumes.
+
+Inputs stay in browser memory and reset on refresh. No analytics or backend is connected, and input data is not uploaded.
 
 ## Edit and run
 
 Edit `index.html`, `styles.css`, `app.js` and `model.js` directly. GitHub Pages serves the `main` branch root. There is no build step.
 
-Run the calculation checks with `node test-model.cjs`.
+Run the main calculation checks with `node test-model.cjs`. Run the preserved detailed model checks with `node detailed/test-model.cjs`.
 
 Fustat and Inter redistribution licenses are included in `assets/`. Colare’s logo and brand assets remain the property of their respective owner. This repository grants no trademark license.
